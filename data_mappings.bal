@@ -1,5 +1,4 @@
 // Data mapper function to map FHIR Bundle to flat record structure
-
 import ballerinax/health.fhir.r4;
 
 public function mapBundleToFlat(json bundle) returns FlatBundleRecord|error {
