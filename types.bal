@@ -1,44 +1,37 @@
 // HL7 message structure
 public type Hl7Message record {
+    map&lt;string&gt; msh;
+    map&lt;string&gt; pid;
+    map&lt;string&gt; pv1;
+    map&lt;string&gt; nk1;
+};
+
+// Transformed data structure
+public type TransformedData record {
     string messageCode;
     string messageTriggerEvent;
     string firstName;
     string lastName;
     string dateOfBirth;
-    string originalMessage;
+    Hl7JsonObject hl7JsonObject;
 };
 
-// Patient data for database storage
-public type PatientRecord record {
-    string firstName;
-    string lastName;
-    string dateOfBirth;
+// HL7 JSON object structure
+public type Hl7JsonObject record {
+    string first_name;
+    string last_name;
+    string date_of_birth;
 };
 
 // Validation result
 public type ValidationResult record {
     boolean isValid;
-    string[] errors;
+    string errorMessage;
 };
 
-// MLLP frame structure
-public type MllpFrame record {
-    string message;
-    boolean isValid;
-};
-
-// Custom flat record for FHIR Bundle mapping (keeping existing structure)
-public type FlatBundleRecord record {
-    string id;
-    int totalEntries;
-    string patientId;
-    string patientGivenName;
-    string patientBirthdate;
-    string encounterId;
-};
-
-// Configuration record for FHIR servers (keeping existing structure)
-public type FhirServerConfig record {
-    string url;
-    string name;
+// Patient data for database storage
+public type PatientData record {
+    string firstname;
+    string lastname;
+    string dateofbirth;
 };

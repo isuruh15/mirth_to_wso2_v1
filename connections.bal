@@ -1,40 +1,39 @@
-import ballerina/http;
 import ballerina/sql;
 import ballerinax/mysql;
+import ballerina/log;
 
-// Initialize MySQL client
-final mysql:Client dbClient = check new (
-    host = dbHost,
-    port = dbPort,
-    database = dbName,
-    user = dbUser,
-    password = dbPassword
-);
-
-// Function to insert patient data into database
-public function insertPatientData(PatientRecord patient) returns error? {
-    sql:ParameterizedQuery query = `
-        INSERT INTO patients (firstname, lastname, dateofbirth)
-        VALUES (${patient.firstName}, ${patient.lastName}, ${patient.dateOfBirth})
-    `;
-
-    sql:ExecutionResult result = check dbClient->execute(query);
-    return;
+// Database connection management
+public class DatabaseManager {
+    private mysql:Client? dbClient = ();
+    
+    public function init() returns error? {
+        if enableDatabaseStorage {
+            self.dbClient = check new (host = dbHost, port = dbPort, user = dbUser, password = dbPassword, database = dbName);
+            log:printInfo("Database connection established");
+        }
+    }
+    
+    public function insertPatient(PatientData patientData) returns error? {
+        if self.dbClient is mysql:Client {
+            mysql:Client client = &lt;mysql:Client&gt;self.dbClient;
+            sql:ExecutionResult result = check client->execute(`
+                INSERT INTO patients (firstname, lastname, dateofbirth) 
+                VALUES (${patientData.firstname}, ${patientData.lastname}, ${patientData.dateofbirth})
+            `);
+            log:printInfo(string `Patient data inserted with ID: ${result.lastInsertId}`);
+        } else {
+            log:printInfo("Database storage is disabled");
+        }
+    }
+    
+    public function close() returns error? {
+        if self.dbClient is mysql:Client {
+            mysql:Client client = &lt;mysql:Client&gt;self.dbClient;
+            check client.close();
+            log:printInfo("Database connection closed");
+        }
+    }
 }
 
-// Function to close database connection
-public function closeDatabaseConnection() returns error? {
-    check dbClient.close();
-}
-
-// Keep existing FHIR functions for compatibility
-final http:Client fhirClient1 = check new (fhirServer1Url);
-final http:Client fhirClient2 = check new (fhirServer2Url);
-
-public function sendToFhirServers(json fhirBundle) returns error? {
-    http:Response response1 = check fhirClient1->post(path = "/Bundle", message = fhirBundle);
-    http:Response response2 = check fhirClient2->post(path = "/Bundle", message = fhirBundle);
-    return;
-}
-
-final http:Client recordsClient = check new (fhirServer2Url);
+// Global database manager instance
+public final DatabaseManager dbManager = new;
