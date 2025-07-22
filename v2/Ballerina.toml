@@ -1,0 +1,29 @@
+[package]
+org = "healthcare"
+name = "hl7_to_xml_transformer"
+version = "1.0.0"
+
+# [[dependency]]
+# org = "ballerinax"
+# name = "health.hl7v2"
+# version = "1.1.0"
+
+# [[dependency]]
+# org = "ballerinax"
+# name = "health.hl7v23"
+# version = "1.1.0"
+
+# [[dependency]]
+# org = "ballerina"
+# name = "tcp"
+# version = "1.11.0"
+
+# [[dependency]]
+# org = "ballerina"
+# name = "io"
+# version = "1.6.0"
+
+# [[dependency]]
+# org = "ballerina"
+# name = "xmldata"
+# version = "2.6.0"
